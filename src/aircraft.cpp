@@ -21,37 +21,66 @@ AUTHOR: ETHAN CHAN
 #include <iostream>
 #include <thread>
 
+namespace Aircraft {
 Aircraft::Aircraft() {}
 
 int Aircraft::init(const std::string& url) {
-    ConnectionResult connectionResult = this->mavsdk.add_any_connection(url);
-    if (connectionResult != ConnectionResult::Success) {
+    Mav::ConnectionResult connectionResult =
+        this->mavsdk.add_any_connection(url);
+    if (connectionResult != Mav::ConnectionResult::Success) {
         std::cerr << "Connection failed: " << connectionResult << '\n';
         return 1;
     }
 
-    auto system = this->mavsdk.first_autopilot(Aircraft::CONNECTION_TIMEOUT);
-    if (!system) {
+    this->system =
+        this->mavsdk.first_autopilot(Aircraft::CONNECTION_TIMEOUT).value();
+
+    if (!this->system) {
         std::cerr << "Timed out waiting for system\n";
         return 1;
     }
 
-    this->telemetry = std::make_shared<Telemetry>(system.value());
-    this->action = std::make_shared<Action>(system.value());
+    Mav::MavlinkPassthrough mavlinkPassthrough(this->system);
+    mavlinkPassthrough.subscribe_message(MAVLINK_MSG_ID_SYS_STATUS,
+        [&](const mavlink_message_t& message) {
+            mavlink_sys_status_t status;
+
+            mavlink_msg_sys_status_decode(&message, &status);
+
+            this->data.system.cpu = static_cast<float>(status.load) / 10000;
+        });
+
+    this->telemetry = std::make_shared<Mav::Telemetry>(system);
+    this->action = std::make_shared<Mav::Action>(system);
+
+    this->telemetry->subscribe_battery(
+        [&](const Mav::Telemetry::Battery& battery) {
+            this->data.battery.temperature = battery.temperature_degc;
+            this->data.battery.voltage = battery.voltage_v;
+            this->data.battery.current = battery.current_battery_a;
+            this->data.battery.capacityConsumed = battery.capacity_consumed_ah;
+            this->data.battery.remaining = battery.remaining_percent;
+            this->data.battery.runtime = battery.time_remaining_s;
+        }
+    );
 
     const auto setRateResult =
         this->telemetry->set_rate_position(Aircraft::TELEMETRY_RATE);
-    if (setRateResult != Telemetry::Result::Success) {
+    if (setRateResult != Mav::Telemetry::Result::Success) {
         std::cerr << "Setting rate failed: " << setRateResult << '\n';
         return 1;
     }
 
     this->telemetry->subscribe_position(
-        [&](const Telemetry::Position& position) {
+        [&](const Mav::Telemetry::Position& position) {
             this->data.latitude = position.latitude_deg;
             this->data.longitude = position.longitude_deg;
             this->data.altitude = position.relative_altitude_m;
             this->data.absoluteAltitude = position.absolute_altitude_m;
+            this->data.lastUpdated =
+                std::chrono::time_point_cast<std::chrono::milliseconds>(
+                    std::chrono::system_clock::now()
+                );
         }
     );
 
@@ -83,15 +112,17 @@ int Aircraft::land() {
     ACTION(this->action->land(), "Landing failed: ");
 }
 
-int Aircraft::gotoLocation(Pos3Y position, bool async) {
+int Aircraft::gotoLocation(Transform position, bool async) {
     auto [latitude, longitude, altitude, yaw] = position;
     if (async) {
-        this->action->goto_location_async(
-            latitude, longitude, altitude, yaw, [&](Action::Result result) {
-                return 0;
-            }
-        );
+        this->action->goto_location_async(latitude,
+            longitude,
+            altitude,
+            yaw,
+            [&](Mav::Action::Result result) { return 0; });
     }
     ACTION(this->action->goto_location(latitude, longitude, altitude, yaw),
         "Goto location failed: ");
 }
+
+} // namespace Aircraft

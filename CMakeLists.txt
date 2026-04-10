@@ -1,4 +1,4 @@
-﻿cmake_minimum_required (VERSION 3.10)
+﻿cmake_minimum_required(VERSION 3.10)
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
@@ -16,18 +16,14 @@ add_compile_options(/Z7)
 
 set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT Embedded)
 
-option(aircraft_HEADER_ONLY "Build as header-only" OFF)
+file(
+    GLOB_RECURSE
+    SOURCES
+    "src/*.cpp"
+    "include/*.h"
+)
 
-if (aircraft_HEADER_ONLY)
-    add_library(aircraft INTERFACE)
-    target_include_directories(aircraft INTERFACE include)
-else()
-    add_library(aircraft "src/aircraft.cpp")
-    target_include_directories(aircraft PUBLIC include)
-    target_link_libraries(aircraft PUBLIC MAVSDK::mavsdk)
-    target_compile_features(aircraft PUBLIC cxx_std_20)
-endif()
-
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-    set_property(TARGET aircraft PROPERTY CXX_STANDARD 20)
-endif()
+add_library(aircraft STATIC ${SOURCES})
+target_include_directories(aircraft PUBLIC include)
+target_link_libraries(aircraft PUBLIC MAVSDK::mavsdk)
+target_compile_features(aircraft PUBLIC cxx_std_20)

@@ -19,9 +19,22 @@ AUTHOR: ETHAN CHAN
 
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/action/action.h>
+#include <mavsdk/plugins/mavlink_passthrough/mavlink_passthrough.h>
 #include <mavsdk/plugins/telemetry/telemetry.h>
 
-using namespace mavsdk;
+#include <chrono>
+
+namespace Mav = mavsdk;
+
+namespace Aircraft {
+
+/*
+MAVLink system information
+*/
+struct System {
+    // CPU utilization (0-1), obtained from system mavlink passthrough
+    float cpu;
+};
 
 struct AircraftData {
     double latitude;
@@ -30,19 +43,53 @@ struct AircraftData {
     float absoluteAltitude;
 
     float batterySoc;
+
+    // Battery information, obtained from telemetry
+    struct Battery {
+        // Temperature of battery, in Celsius
+        float temperature;
+
+        // Voltage of battery in volts
+        float voltage;
+
+        // Current of battery in amperes
+        float current;
+
+        // Consumed battery charge in amp-hours
+        float capacityConsumed;
+
+        // Remaining battery capacity (0-100)
+        float remaining;
+
+        // Remaining battery duration, in seconds
+        float runtime;
+    };
+    Battery battery;
+
+    System system;
+
+    std::chrono::time_point<std::chrono::system_clock,
+        std::chrono::milliseconds>
+        lastUpdated;
 };
 
 #define ACTION(expression, message)                                            \
     do {                                                                       \
-        const Action::Result result = (expression);                            \
-        if (result != Action::Result::Success) {                               \
+        const Mav::Action::Result result = (expression);                       \
+        if (result != Mav::Action::Result::Success) {                          \
             std::cout << message << result << '\n';                            \
             return 1;                                                          \
         }                                                                      \
         return 0;                                                              \
     } while (0)
 
-struct Pos3Y {
+struct Vec3 {
+    float x;
+    float y;
+    float z;
+};
+
+struct Transform {
     double latitude;
     double longitude;
     float altitude; // m above sea level
@@ -51,15 +98,17 @@ struct Pos3Y {
 
 class Aircraft {
   private:
-    std::shared_ptr<System> system;
-    std::shared_ptr<Action> action;
-    std::shared_ptr<Telemetry> telemetry;
+    std::shared_ptr<Mav::System> system;
+    std::shared_ptr<Mav::Action> action;
+    std::shared_ptr<Mav::Telemetry> telemetry;
 
   public:
     static constexpr double CONNECTION_TIMEOUT = 3.0;
     static constexpr double TELEMETRY_RATE = 1.0;
 
-    Mavsdk mavsdk{Mavsdk::Configuration{ComponentType::GroundStation}};
+    Mav::Mavsdk mavsdk{
+        Mav::Mavsdk::Configuration{Mav::ComponentType::GroundStation}
+    };
 
     AircraftData data;
 
@@ -68,6 +117,7 @@ class Aircraft {
 
     // Blocking, waits until the aircraft is ready to arm
     void readyToArm();
+
     int arm();
     int armForce();
     int disarm();
@@ -75,5 +125,7 @@ class Aircraft {
     int takeOff();
     int land();
 
-    int gotoLocation(Pos3Y position, bool async = true);
+    int gotoLocation(Transform position, bool async = true);
 };
+
+} // namespace Aircraft
