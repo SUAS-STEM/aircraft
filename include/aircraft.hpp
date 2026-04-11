@@ -19,6 +19,7 @@ AUTHOR: ETHAN CHAN
 
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/action/action.h>
+#include <mavsdk/plugins/gimbal/gimbal.h>
 #include <mavsdk/plugins/mavlink_passthrough/mavlink_passthrough.h>
 #include <mavsdk/plugins/telemetry/telemetry.h>
 
@@ -34,6 +35,12 @@ MAVLink system information
 struct System {
     // CPU utilization (0-1), obtained from system mavlink passthrough
     float cpu;
+};
+
+struct Gimbal {
+    float pitch;
+    float yaw;
+    float roll;
 };
 
 struct AircraftData {
@@ -65,7 +72,7 @@ struct AircraftData {
         float runtime;
     };
     Battery battery;
-
+    Gimbal gimbal;
     System system;
 
     std::chrono::time_point<std::chrono::system_clock,
@@ -101,6 +108,7 @@ class Aircraft {
     std::shared_ptr<Mav::System> system;
     std::shared_ptr<Mav::Action> action;
     std::shared_ptr<Mav::Telemetry> telemetry;
+    std::shared_ptr<Mav::Gimbal> gimbal;
 
   public:
     static constexpr double CONNECTION_TIMEOUT = 3.0;

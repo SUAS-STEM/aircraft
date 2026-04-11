@@ -52,6 +52,13 @@ int Aircraft::init(const std::string& url) {
 
     this->telemetry = std::make_shared<Mav::Telemetry>(system);
     this->action = std::make_shared<Mav::Action>(system);
+    this->gimbal = std::make_shared<Mav::Gimbal>(system);
+
+    this->gimbal->subscribe_attitude([&](Mav::Gimbal::Attitude attitude) {
+        this->data.gimbal.pitch = attitude.euler_angle_forward.pitch_deg;
+        this->data.gimbal.yaw = attitude.euler_angle_forward.yaw_deg;
+        this->data.gimbal.roll = attitude.euler_angle_forward.roll_deg;
+    });
 
     this->telemetry->subscribe_battery(
         [&](const Mav::Telemetry::Battery& battery) {
