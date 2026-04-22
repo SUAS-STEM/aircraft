@@ -25,6 +25,8 @@ AUTHOR: ETHAN CHAN
 
 #include <chrono>
 
+#include "camera.hpp"
+
 namespace Mav = mavsdk;
 
 namespace Aircraft {
@@ -120,6 +122,8 @@ class Aircraft {
     };
 
     AircraftData data;
+
+    Camera camera;
 
     Aircraft();
     int init(const std::string& url);
