@@ -8,10 +8,12 @@ SUAS@STEM's aircraft backend for autonomous missions and ground control station 
 * **Microsoft Visual Studio C++** supporting C++17 or higher; MinGW is not supported
 * CMake 3.1
 * MAVSDK
+* OpenCV
+* `nlohmann::json`
 
-To install MAVSDK:
-1. Download `mavsdk-windows-x64.zip` from the latest [MAVSDK release](https://github.com/mavlink/MAVSDK/releases)
-2. Extract the downloaded files to `C:\mavsdk`
+These dependencies are expected to be in the `extern/` directory.
+
+Run ".\install.ps1" to install all required dependencies automatically, including the MSVC++ Build Tools and CMake, if they are not already installed.
 
 ## Building from source
 
