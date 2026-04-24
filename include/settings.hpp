@@ -19,7 +19,7 @@ AUTHOR: ETHAN CHAN
 
 #include <string>
 
-#include "json/json.hpp"
+#include "json.hpp"
 
 namespace Aircraft {
 class Settings {

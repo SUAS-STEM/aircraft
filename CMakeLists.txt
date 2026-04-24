@@ -9,7 +9,7 @@ endif()
 project(aircraft)
 
 list(APPEND CMAKE_PREFIX_PATH "extern/mavsdk")
-set(OpenCV_DIR "${CMAKE_SOURCE_DIR}/extern/opencv/build")
+set(OpenCV_DIR "extern/opencv/build")
 
 # set(CMAKE_MSVCIDE_RUN_PATH "${OpenCV_DIR}/x64/vc16/bin")
 
@@ -28,6 +28,6 @@ file(
 )
 
 add_library(aircraft STATIC ${SOURCES})
-target_include_directories(aircraft PUBLIC include)
+target_include_directories(aircraft PUBLIC include extern/json)
 target_link_libraries(aircraft PUBLIC MAVSDK::mavsdk ${OpenCV_LIBS})
 target_compile_features(aircraft PUBLIC cxx_std_20)
