@@ -4,6 +4,8 @@ SUAS@STEM's aircraft backend for autonomous missions and ground control station 
 
 ## Dependencies
 
+Windows is the only supported operating system; support for Linux and Android may be made in the future (as they are all supported by all dependencies).
+
 **You will need**:
 * **Microsoft Visual Studio C++** supporting C++17 or higher; MinGW is not supported
 * CMake 3.1
@@ -13,7 +15,7 @@ SUAS@STEM's aircraft backend for autonomous missions and ground control station 
 
 These dependencies are expected to be in the `extern/` directory.
 
-Run ".\install.ps1" to install all required dependencies automatically, including the MSVC++ Build Tools and CMake, if they are not already installed.
+Run [`.\install.ps1`](install.ps1) to automatically install all required dependencies, including the MSVC++ Build Tools and CMake, if they are not already installed.
 
 ## Building from source
 
