@@ -13,7 +13,7 @@ SUAS@STEM's aircraft backend for autonomous missions and ground control station 
 
 These dependencies are expected to be in the `extern/` directory.
 
-Run ".\install.ps1" to install all required dependencies automatically, including the MSVC++ Build Tools and CMake, if they are not already installed.
+Run `.\install.ps1` to install all required dependencies automatically, including the MSVC++ Build Tools and CMake, if they are not already installed.
 
 ## Building from source
 
