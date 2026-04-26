@@ -67,20 +67,24 @@ class Settings {
     For example, "camera.rtsp_url" would access the "rtsp_url" field within the
     "camera" object.
     */
-    template <typename T> T get(const std::string& key, bool& exists) {
+    template <typename T> T get(const std::string& key, bool& exists) const {
         const nlohmann::json::json_pointer pointer = _toJsonPointer(key);
         exists = data.contains(pointer);
         if (exists) return data.at(pointer).template get<T>();
-        return T{};
+
+        return T();
     }
 
     template <typename T>
     T get(const std::string& key, const T& defaultValue) const {
         const nlohmann::json::json_pointer pointer = _toJsonPointer(key);
-        if (data.contains(pointer)) return data.at(pointer).template get<T>();
+        try {
+            if (data.contains(pointer))
+                return data.at(pointer).template get<T>();
+        } catch (const nlohmann::json::exception&) {
+        }
         return defaultValue;
     }
-
     template <typename T> void set(const std::string& key, const T& value) {
         data[_toJsonPointer(key)] = value;
     }
