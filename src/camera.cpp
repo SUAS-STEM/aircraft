@@ -24,4 +24,7 @@ Camera::Camera() {
 
     this->capture.open(this->rtspUrl, cv::CAP_FFMPEG);
 }
+Camera::~Camera() {
+    this->capture.release();
+}
 } // namespace Aircraft
