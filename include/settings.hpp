@@ -73,7 +73,7 @@ class Settings {
 
         if (data.contains(pointer)) return {data.at(pointer).template get<T>(), true};
 
-        std::cerr << "Setting key \"" << key << "\" does not exist in"
+        std::cerr << "Setting key \"" << key << "\" does not exist in "
                   << this->filepath << '\n';
         return {T(), false};
     }
