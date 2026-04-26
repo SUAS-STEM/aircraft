@@ -1,1 +1,3 @@
-#define ERROR std::cerr
+#ifndef ERROR
+	#define ERROR std::cerr
+#endif

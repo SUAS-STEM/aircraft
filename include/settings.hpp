@@ -17,8 +17,8 @@ AUTHOR: ETHAN CHAN
 
 #pragma once
 
-#include <string>
 #include <iostream>
+#include <string>
 
 #include "common.h"
 
@@ -73,10 +73,11 @@ class Settings {
     template <typename T> std::pair<T, bool> get(const std::string& key) const {
         const nlohmann::json::json_pointer pointer = _toJsonPointer(key);
 
-        if (data.contains(pointer)) return {data.at(pointer).template get<T>(), true};
+        if (data.contains(pointer))
+            return {data.at(pointer).template get<T>(), true};
 
         ERROR << "Setting key \"" << key << "\" does not exist in "
-                  << this->filepath << '\n';
+              << this->filepath << '\n';
         return {T(), false};
     }
 
