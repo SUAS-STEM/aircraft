@@ -26,6 +26,7 @@ AUTHOR: ETHAN CHAN
 #include <chrono>
 
 #include "camera.hpp"
+#include "common.h"
 
 namespace Mav = mavsdk;
 
@@ -86,7 +87,7 @@ struct AircraftData {
     do {                                                                       \
         const Mav::Action::Result result = (expression);                       \
         if (result != Mav::Action::Result::Success) {                          \
-            std::cout << message << result << '\n';                            \
+            ERROR << message << result << '\n';                            \
             return 1;                                                          \
         }                                                                      \
         return 0;                                                              \

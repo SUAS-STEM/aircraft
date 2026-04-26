@@ -20,6 +20,8 @@ AUTHOR: ETHAN CHAN
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/mission/mission.h>
 
+#include "common.h"
+
 using namespace mavsdk;
 
 class MissionPlanner {

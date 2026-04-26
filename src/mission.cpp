@@ -30,7 +30,7 @@ MissionPlanner::MissionPlanner() {}
 void MissionPlanner::save(const std::string& filename) {
     std::ofstream file(filename, std::ios::binary);
     if (!file) {
-        std::cerr << "Failed to open file " << filename << '\n';
+        ERROR << "Failed to open file " << filename << '\n';
         return;
     }
 
@@ -52,7 +52,7 @@ void MissionPlanner::save(const std::string& filename) {
 void MissionPlanner::load(const std::string& filename) {
     std::ifstream file(filename, std::ios::binary);
     if (!file) {
-        std::cerr << "Failed to open file " << filename << '\n';
+        ERROR << "Failed to open file " << filename << '\n';
         return;
     }
 

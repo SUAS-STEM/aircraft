@@ -20,6 +20,8 @@ AUTHOR: ETHAN CHAN
 #include <string>
 #include <iostream>
 
+#include "common.h"
+
 #include "json.hpp"
 
 namespace Aircraft {
@@ -73,7 +75,7 @@ class Settings {
 
         if (data.contains(pointer)) return {data.at(pointer).template get<T>(), true};
 
-        std::cerr << "Setting key \"" << key << "\" does not exist in "
+        ERROR << "Setting key \"" << key << "\" does not exist in "
                   << this->filepath << '\n';
         return {T(), false};
     }

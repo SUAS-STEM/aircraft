@@ -28,7 +28,7 @@ int Aircraft::init(const std::string& url) {
     Mav::ConnectionResult connectionResult =
         this->mavsdk.add_any_connection(url);
     if (connectionResult != Mav::ConnectionResult::Success) {
-        std::cerr << "Connection failed: " << connectionResult << '\n';
+        ERROR << "Connection failed: " << connectionResult << '\n';
         return 1;
     }
 
@@ -36,7 +36,7 @@ int Aircraft::init(const std::string& url) {
         this->mavsdk.first_autopilot(Aircraft::CONNECTION_TIMEOUT).value();
 
     if (!this->system) {
-        std::cerr << "Timed out waiting for system\n";
+        ERROR << "Timed out waiting for system\n";
         return 1;
     }
     
@@ -49,7 +49,7 @@ int Aircraft::init(const std::string& url) {
     const auto setRateResult =
         this->telemetry->set_rate_position(Aircraft::TELEMETRY_RATE);
     if (setRateResult != Mav::Telemetry::Result::Success) {
-        std::cerr << "Setting rate failed: " << setRateResult << '\n';
+        ERROR << "Setting rate failed: " << setRateResult << '\n';
         return 1;
     }
 
