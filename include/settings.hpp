@@ -18,6 +18,7 @@ AUTHOR: ETHAN CHAN
 #pragma once
 
 #include <string>
+#include <iostream>
 
 #include "json.hpp"
 
