@@ -56,6 +56,13 @@ int Aircraft::init(const std::string& url) {
     return 0;
 }
 
+bool Aircraft::connected() const {
+    if (!this->system) {
+        return false;
+    } 
+    return this->system->is_connected();
+}
+
 void Aircraft::subscribe() {
     this->gimbal->subscribe_attitude([&](Mav::Gimbal::Attitude attitude) {
         this->data.gimbal.pitch = attitude.euler_angle_forward.pitch_deg;

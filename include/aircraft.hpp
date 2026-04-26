@@ -127,6 +127,7 @@ class Aircraft {
 
     Aircraft();
     int init(const std::string& url);
+    bool connected() const;
     void subscribe();
 
     // Blocking, waits until the aircraft is ready to arm
